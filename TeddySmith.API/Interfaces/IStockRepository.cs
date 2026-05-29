@@ -1,7 +1,14 @@
-﻿namespace TeddySmith.API.Interfaces
+﻿using TeddySmith.API.DTOs.Stock;
+using TeddySmith.API.Models;
+
+namespace TeddySmith.API.Interfaces
 {
     public interface IStockRepository
     {
-
+        Task<List<StockDto>> GetAllAsync();
+        Task<StockDto?> GetByIdAsync(int id);
+        Task<Stock> CreateStockAsync(CreateStockRequestDto stockDto);
+        Task<StockDto?> UpdateStockAsync(int id, UpdateStockRequestDto stockDto);
+        Task<Stock?> DeleteStockAsync(int id);
     }
 }

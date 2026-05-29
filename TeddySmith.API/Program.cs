@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using TeddySmith.API.Data;
+using TeddySmith.API.Interfaces;
+using TeddySmith.API.Repository;
 
 namespace TeddySmith.API
 {
@@ -21,7 +23,7 @@ namespace TeddySmith.API
 
             builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            builder.Services.AddScoped<IStockRepository, StockRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
