@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using TeddySmith.API.DTOs.Comment;
 using TeddySmith.API.Models;
 
 namespace TeddySmith.API.DTOs.Stock
@@ -19,6 +20,7 @@ namespace TeddySmith.API.DTOs.Stock
 
         public long MarketCap { get; set; }
 
+        public List<CommentDto> Comments { get; set; }
       
     }
 }

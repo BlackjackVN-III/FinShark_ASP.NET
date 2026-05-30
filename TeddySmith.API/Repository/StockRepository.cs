@@ -2,6 +2,7 @@
 using System.Reflection.Metadata.Ecma335;
 using TeddySmith.API.Data;
 using TeddySmith.API.DTOs.Stock;
+using TeddySmith.API.Helpers;
 using TeddySmith.API.Interfaces;
 using TeddySmith.API.Mappers;
 using TeddySmith.API.Models;
@@ -36,18 +37,49 @@ namespace TeddySmith.API.Repository
             return delete;
         }
 
-        public async Task<List<StockDto>> GetAllAsync()
+        public async Task<List<Stock>> GetAllAsync(QueryObject queryObject)
         {
-            return await _context.Stock.Select(s => s.ToStockDto()).ToListAsync();
+            //Sort 
 
+            var stock = _context.Stock.Include(c => c.Comments).AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(queryObject.CompanyName))
+            {
+                stock = stock.Where(s => s.CompanyName.Contains(queryObject.CompanyName));
+            }
+            if (!string.IsNullOrWhiteSpace(queryObject.Symbol))
+            {
+                stock = stock.Where(s => s.Symbol.Contains(queryObject.Symbol));
+            }
+
+            if (!string.IsNullOrWhiteSpace(queryObject.SortBy))
+            {
+                if (queryObject.SortBy.Equals("Symbol",StringComparison.OrdinalIgnoreCase))
+                {
+                    stock = queryObject.isDecsending ? stock.OrderByDescending(s=>s.Symbol) : stock.OrderBy(s=>s.Symbol);
+                }
+
+            }
+
+            //Pagination
+
+            var skipNumber = (queryObject.PageNumber -1)* queryObject.PageSize;
+
+                
+
+            return await  stock.Skip(skipNumber).Take(queryObject.PageSize).ToListAsync();
         }
 
         public async Task<StockDto?> GetByIdAsync(int id)
         {
-            var stock = await _context.Stock.FindAsync(id);
+            var stock = await _context.Stock.Include(c => c.Comments).FirstOrDefaultAsync(i=>i.Id ==id);
             return stock?.ToStockDto();
 
+        }
+
+        public async Task<bool> StockExists(int id)
+        {
+           return await _context.Stock.AnyAsync(x => x.Id == id);
         }
 
         public async Task<StockDto?> UpdateStockAsync(int id, UpdateStockRequestDto stockDto)

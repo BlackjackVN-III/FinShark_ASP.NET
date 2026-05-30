@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using TeddySmith.API.Data;
 using TeddySmith.API.DTOs.Stock;
+using TeddySmith.API.Helpers;
 using TeddySmith.API.Interfaces;
 using TeddySmith.API.Mappers;
 using TeddySmith.API.Repository;
@@ -23,16 +24,21 @@ namespace TeddySmith.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] QueryObject queryObject)
         {
-            var stocks = await _stockRepository.GetAllAsync();
-            
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var stocks = await _stockRepository.GetAllAsync(queryObject);
+            var stockDto = stocks.Select(s => s.ToStockDto());
             return Ok(stocks); 
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var stocks = await _stockRepository.GetByIdAsync(id);
 
             if (stocks == null)
@@ -46,14 +52,20 @@ namespace TeddySmith.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateStockRequestDto stockDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var stockModel = await _stockRepository.CreateStockAsync(stockDto);
             return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel);
 
         }
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var updateModel = await _stockRepository.UpdateStockAsync(id, updateDto);
             if (updateModel == null)
             {
@@ -64,9 +76,12 @@ namespace TeddySmith.API.Controllers
         }
 
         [HttpDelete]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var deleteModel = await _stockRepository.DeleteStockAsync(id);
             if (deleteModel == null)
             {
