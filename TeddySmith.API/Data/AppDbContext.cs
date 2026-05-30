@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TeddySmith.API.Models;
 
 namespace TeddySmith.API.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions dbContextOptions): base(dbContextOptions)
         {
@@ -12,5 +14,41 @@ namespace TeddySmith.API.Data
 
         public DbSet<Stock> Stock { get; set; }
         public DbSet<Comment> Comments { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "1" },
+                new IdentityRole { Id = "2", Name = "User", NormalizedName = "USER", ConcurrencyStamp = "2" }
+            );
+        }
+
+        /*        protected override void OnModelCreating(ModelBuilder modelBuilder)
+                {
+                    base.OnModelCreating(modelBuilder);
+
+                    List<IdentityRole> roles = new List<IdentityRole>
+                    {
+                        new IdentityRole
+                        {
+                             Id = "Admin",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new IdentityRole
+                        {
+                             Id = "User",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        }
+
+                    };
+                    modelBuilder.Entity<IdentityRole>().HasData(roles);
+
+                }*/
     }
 }
+ 

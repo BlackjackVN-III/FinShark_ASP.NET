@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TeddySmith.API.Data;
 
@@ -11,9 +12,11 @@ using TeddySmith.API.Data;
 namespace TeddySmith.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260530183202_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,15 +54,15 @@ namespace TeddySmith.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            ConcurrencyStamp = "1",
+                            Id = "Admin",
+                            ConcurrencyStamp = "77428425-d80c-43df-93a6-b27584d7caf0",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "2",
-                            ConcurrencyStamp = "2",
+                            Id = "User",
+                            ConcurrencyStamp = "5a07787b-52bb-4b24-824e-451559d8bf38",
                             Name = "User",
                             NormalizedName = "USER"
                         });
