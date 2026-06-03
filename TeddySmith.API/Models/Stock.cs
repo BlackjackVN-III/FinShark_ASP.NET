@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TeddySmith.API.Models
 {
+    [Table("Stocks")]
     public class Stock
     {
         public int Id { get; set; }
@@ -21,5 +22,6 @@ namespace TeddySmith.API.Models
         public long MarketCap { get; set; }
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<Portfollo> Portfollos { get; set; } = new List<Portfollo>();
     }
 }

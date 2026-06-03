@@ -6,9 +6,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using TeddySmith.API.Data;
+using TeddySmith.API.Helpers;
 using TeddySmith.API.Interfaces;
 using TeddySmith.API.Models;
 using TeddySmith.API.Repository;
+using TeddySmith.API.Service;
 
 namespace TeddySmith.API
 {
@@ -23,6 +25,13 @@ namespace TeddySmith.API
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+            //author JWT Scalar
+            builder.Services.AddOpenApi(options =>
+            {
+                options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+            });
+
             /* builder.Services.AddDbContext<AppDbContext>(option => { 
                  option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); });*/
             builder.Services.AddControllers().AddNewtonsoftJson(options => {options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -72,8 +81,8 @@ namespace TeddySmith.API
             //Add repo, Irepo
             builder.Services.AddScoped<IStockRepository, StockRepository>();
             builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-
-
+            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IPortpolioRepository, PortfolioRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -89,8 +98,7 @@ namespace TeddySmith.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseAuthorization();
-
+            
 
             app.MapControllers();
 

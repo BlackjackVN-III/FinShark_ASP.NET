@@ -265,6 +265,21 @@ namespace TeddySmith.API.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("TeddySmith.API.Models.Portfollo", b =>
+                {
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("StockId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AppUserId", "StockId");
+
+                    b.HasIndex("StockId");
+
+                    b.ToTable("Portfollos");
+                });
+
             modelBuilder.Entity("TeddySmith.API.Models.Stock", b =>
                 {
                     b.Property<int>("Id")
@@ -296,7 +311,7 @@ namespace TeddySmith.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Stock");
+                    b.ToTable("Stocks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -359,9 +374,35 @@ namespace TeddySmith.API.Migrations
                     b.Navigation("Stock");
                 });
 
+            modelBuilder.Entity("TeddySmith.API.Models.Portfollo", b =>
+                {
+                    b.HasOne("TeddySmith.API.Models.AppUser", "AppUser")
+                        .WithMany("Portfollos")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TeddySmith.API.Models.Stock", "Stock")
+                        .WithMany("Portfollos")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Stock");
+                });
+
+            modelBuilder.Entity("TeddySmith.API.Models.AppUser", b =>
+                {
+                    b.Navigation("Portfollos");
+                });
+
             modelBuilder.Entity("TeddySmith.API.Models.Stock", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Portfollos");
                 });
 #pragma warning restore 612, 618
         }

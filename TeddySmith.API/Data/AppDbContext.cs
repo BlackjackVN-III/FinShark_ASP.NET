@@ -14,11 +14,26 @@ namespace TeddySmith.API.Data
 
         public DbSet<Stock> Stock { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Portfollo> Portfollos { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Portfollo>(x => x.HasKey(p => new{p.AppUserId,p.StockId}));
+
+            modelBuilder.Entity<Portfollo>()
+                  .HasOne(u => u.AppUser)
+                  .WithMany(u => u.Portfollos)
+                  .HasForeignKey(u => u.AppUserId);
+
+            modelBuilder.Entity<Portfollo>()
+                 .HasOne(u => u.Stock)
+                 .WithMany(u => u.Portfollos)
+                 .HasForeignKey(u => u.StockId);
+
+
 
             modelBuilder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "1" },
