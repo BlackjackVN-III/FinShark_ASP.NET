@@ -13,6 +13,25 @@ namespace TeddySmith.API.Repository
             _context = context;
         }
 
+        public async Task<Portfollo> CreateAsync(Portfollo portfollo)
+        {
+            await _context.Portfollos.AddAsync(portfollo);
+            await _context.SaveChangesAsync();
+            return portfollo;
+        }
+
+        public async Task<Portfollo> DeleteAsync(AppUser appUser, string symbol)
+        {
+            var portModel = await _context.Portfollos.FirstOrDefaultAsync(s=> s.AppUserId == appUser.Id && s.Stock.Symbol.ToLower() == symbol.ToLower());
+            if (portModel == null)
+            {
+                return null;
+            }
+           _context.Portfollos.Remove(portModel);
+           await _context.SaveChangesAsync();
+            return portModel;
+        }
+
         public async Task<List<Stock>> GetUserPortfolio(AppUser user)
         {
             return await _context.Portfollos.Where(u => u.AppUserId == user.Id)

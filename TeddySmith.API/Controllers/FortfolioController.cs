@@ -33,5 +33,62 @@ namespace TeddySmith.API.Controllers
             var userPortpolio = await _portpolioRepository.GetUserPortfolio(appUser);
             return Ok(userPortpolio);
         }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreatePortpolio(string symbol)
+        {
+            var username = User.GetUsername();
+            var appUser = await _userManager.FindByNameAsync(username);
+            var stock = await _stockRepository.GetBySymbolAsync(symbol);
+            if (stock == null)
+            {
+                return BadRequest("Stock not found");
+            }
+            var userPort = await _portpolioRepository.GetUserPortfolio(appUser);
+            if (userPort.Any(s => s.Symbol.ToLower() == symbol.ToLower()))
+            {
+                return BadRequest("Cannot add same stock to portpolio");
+
+            };
+
+            var portModel = new Portfollo
+            {
+                AppUserId = appUser.Id,
+                StockId = stock.Id
+            };
+
+            await _portpolioRepository.CreateAsync(portModel);
+            if (portModel == null)
+            {
+                return StatusCode(500, "Could not create");
+            }
+            else
+            {
+                return Created();
+            }
+
+        }
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteAsync(string symbol)
+        {
+            var username = User.GetUsername();
+            var appUser = await _userManager.FindByNameAsync(username);
+
+            var userPort = await _portpolioRepository.GetUserPortfolio(appUser);
+
+        var filterStock = userPort.Where(s=> s.Symbol.ToLower()== symbol.ToLower()).ToList();
+
+            if(filterStock.Count() == 1)
+            {
+                await _portpolioRepository.DeleteAsync(appUser, symbol);
+            }
+            else
+            {
+                return BadRequest("Stock not in your portpolio");
+            }
+            return Ok();
+        }
     }
 }

@@ -16,12 +16,12 @@ namespace TeddySmith.API.Controllers
     [ApiController]
     public class StockController : ControllerBase
     {
-        private readonly AppDbContext _context;
+       
         private readonly IStockRepository _stockRepository;
-        public StockController(AppDbContext context, IStockRepository stockRepository)
+        public StockController( IStockRepository stockRepository)
         {
             _stockRepository = stockRepository;
-            _context = context;
+           
         }
 
         [HttpGet]
