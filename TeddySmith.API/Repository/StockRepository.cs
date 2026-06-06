@@ -41,7 +41,7 @@ namespace TeddySmith.API.Repository
         {
             //Sort 
 
-            var stock = _context.Stock.Include(c => c.Comments).AsQueryable();
+            var stock = _context.Stock.Include(c => c.Comments).ThenInclude(x=>x.AppUser).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(queryObject.CompanyName))
             {
@@ -61,6 +61,8 @@ namespace TeddySmith.API.Repository
 
             }
 
+            
+
             //Pagination
 
             var skipNumber = (queryObject.PageNumber -1)* queryObject.PageSize;
@@ -72,7 +74,7 @@ namespace TeddySmith.API.Repository
 
         public async Task<StockDto?> GetByIdAsync(int id)
         {
-            var stock = await _context.Stock.Include(c => c.Comments).FirstOrDefaultAsync(i=>i.Id ==id);
+            var stock = await _context.Stock.Include(c => c.Comments).ThenInclude(x => x.AppUser).FirstOrDefaultAsync(i=>i.Id ==id);
             return stock?.ToStockDto();
 
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TeddySmith.API.Data;
 using TeddySmith.API.DTOs.Comment;
 using TeddySmith.API.Interfaces;
@@ -9,33 +10,35 @@ namespace TeddySmith.API.Repository
 {
     public class CommentRepository : ICommentRepository
     {
-        
+
         private readonly AppDbContext _context;
+      
         public CommentRepository(AppDbContext context)
         {
             _context = context;
+          
         }
 
         public async Task<Comment> CreateCommentAsync(Comment commentModel)
         {
-           await _context.Comments.AddAsync(commentModel);
+            await _context.Comments.AddAsync(commentModel);
             await _context.SaveChangesAsync();
             return commentModel;
         }
 
         public async Task<List<CommentDto>> GetAllAsync()
         {
-            return await _context.Comments.Select(x =>x.toCommentDto()).ToListAsync();
+            return await _context.Comments.Include(v => v.AppUser).Select(x => x.toCommentDto()).ToListAsync();
         }
 
         public async Task<Comment?> GetByIdAsync(int id)
         {
-            return await _context.Comments.FindAsync(id);
+            return await _context.Comments.Include(x => x.AppUser).FirstOrDefaultAsync(c=>c.Id ==id);
         }
 
-        public async Task<Comment> UpdateCommentAsync(Comment commentModel , int commentId)
+        public async Task<Comment> UpdateCommentAsync(Comment commentModel, int commentId)
         {
-           var updatedCmt =  await _context.Comments.FirstOrDefaultAsync(z => z.Id == commentId);
+            var updatedCmt = await _context.Comments.FirstOrDefaultAsync(z => z.Id == commentId);
 
             if (updatedCmt == null)
             {
@@ -43,13 +46,13 @@ namespace TeddySmith.API.Repository
             }
             updatedCmt.Title = commentModel.Title;
             updatedCmt.Content = commentModel.Content;
-            
+
             await _context.SaveChangesAsync();
             return updatedCmt;
 
         }
 
-       
+
     }
 }
 

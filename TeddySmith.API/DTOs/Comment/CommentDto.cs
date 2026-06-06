@@ -6,8 +6,9 @@
         public string Title { get; set; } = String.Empty;
         public string Content { get; set; } = String.Empty;
         public DateTime CreateOn { get; set; } = DateTime.Now;
+        public string CreatedBy { get; set; } = string.Empty;
         public int? StockId { get; set; }
-  
-         
+
+
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TeddySmith.API.Data;
 using TeddySmith.API.DTOs.Comment;
+using TeddySmith.API.Extensions;
 using TeddySmith.API.Interfaces;
 using TeddySmith.API.Mappers;
 using TeddySmith.API.Models;
@@ -12,15 +14,18 @@ namespace TeddySmith.API.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private readonly AppDbContext _context;
+       
         private readonly ICommentRepository _commentRepository;
         private readonly IStockRepository _stockRepository;
+        private readonly UserManager<AppUser> _userManager;
 
-        public CommentController(AppDbContext context, ICommentRepository repository, IStockRepository stockRepository)
+        public CommentController(AppDbContext context, ICommentRepository repository, IStockRepository stockRepository
+            , UserManager<AppUser> userManager)
         {
-            _context = context;
+            
             _commentRepository = repository;
             _stockRepository = stockRepository;
+            _userManager = userManager;
         }
 
 
@@ -63,7 +68,14 @@ namespace TeddySmith.API.Controllers
             {
                 return BadRequest();
             }
+            // one by one cmt
+            var username = User.GetUsername();
+            var appUser = await _userManager.FindByNameAsync(username);
+            
             var CreateCmt = commentDto.toCommentFromCreate();
+            //  gan 
+            CreateCmt.AppUserId = appUser.Id;
+
             await _commentRepository.CreateCommentAsync(CreateCmt);
             return CreatedAtAction(nameof(GetById), new { id = CreateCmt.Id}, CreateCmt.toCommentDto());
 
